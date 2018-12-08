@@ -19,11 +19,18 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 /**
- * @author Juergen Hoeller
- * Can be Cat, Dog, Hamster...
+ * @author Juergen Hoeller Can be Cat, Dog, Hamster...
  */
 @Entity
 @Table(name = "types")
 public class PetType extends NamedEntity {
+
+  public PetType() {
+  }
+
+  public PetType(int i, String name) {
+    this.setId(i);
+    this.setName(name);
+  }
 
 }

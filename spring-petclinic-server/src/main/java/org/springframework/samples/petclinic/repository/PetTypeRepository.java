@@ -13,26 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.samples.petclinic.model;
+package org.springframework.samples.petclinic.repository;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.samples.petclinic.model.PetType;
 
 /**
- * Models a {@link Vet Vet's} specialty (for example, dentistry).
+ * Repository class for <code>Vet</code> domain objects All method names are compliant with Spring Data naming
+ * conventions so this interface can easily be extended for Spring Data See here:
+ * http://static.springsource.org/spring-data/jpa/docs/current/reference/html/jpa.repositories.html#jpa.query-methods.query-creation
  *
+ * @author Ken Krebs
  * @author Juergen Hoeller
+ * @author Sam Brannen
+ * @author Michael Isvy
  */
-@Entity
-@Table(name = "specialties")
-public class Specialty extends NamedEntity {
-
-  public Specialty() {
-  }
-
-  public Specialty(int id, String name) {
-    this.setId(id);
-    this.setName(name);
-  }
-
+public interface PetTypeRepository extends JpaRepository<PetType, Integer> {
 }

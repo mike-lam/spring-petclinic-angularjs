@@ -9,8 +9,8 @@ import org.springframework.samples.petclinic.config.PetclinicProperties;
 @EnableConfigurationProperties(PetclinicProperties.class)
 public class PetClinicApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(PetClinicApplication.class, args);
-    }
-}
+  public static void main(String[] args) {
+    SpringApplication.run(PetClinicApplication.class, args);
+  }
 
+}
