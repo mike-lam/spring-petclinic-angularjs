@@ -1,4 +1,4 @@
-package org.springframework.samples.petclinic.config;
+package org.springframework.samples.petclinic.owner;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -8,64 +8,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
-import org.springframework.samples.petclinic.model.Owner;
-import org.springframework.samples.petclinic.model.Pet;
-import org.springframework.samples.petclinic.model.PetType;
-import org.springframework.samples.petclinic.model.Specialty;
-import org.springframework.samples.petclinic.model.Vet;
-import org.springframework.samples.petclinic.model.Visit;
-import org.springframework.samples.petclinic.repository.OwnerRepository;
-import org.springframework.samples.petclinic.repository.PetRepository;
-import org.springframework.samples.petclinic.repository.PetTypeRepository;
-import org.springframework.samples.petclinic.repository.SpecialtyRepository;
-import org.springframework.samples.petclinic.repository.VetRepository;
-import org.springframework.samples.petclinic.repository.VisitRepository;
 
 @Configuration
-public class InitDatasourceConfig {
+public class OwnerRepositoryConfig {
 
   @Autowired
   private PetRepository petRepository;
   @Autowired
   private PetTypeRepository petTypeRepository;
   @Autowired
-  private VetRepository vetRepository;
-  @Autowired
   private OwnerRepository ownerRepository;
-  @Autowired
-  private VisitRepository visitRepository;
-  @Autowired
-  private SpecialtyRepository specialtyRepository;
 
   @EventListener(ApplicationReadyEvent.class)
   public void doSomethingAfterStartup() {
     preloadOwners();
     preloadPetTypes();
     preloadPets();
-    preloadVisits();
-    preloadSpecialties();
-    preloadVets();
-
-  }
-
-  private void preloadVets() {
-    Vet vet;
-    vet = new Vet(1, "James", "Carter");
-    vetRepository.save(vet);
-    vet = new Vet(2, "Helen", "Leary");
-    vet.addSpecialty(specialtyRepository.findById(1).get());
-    vetRepository.save(vet);
-    vet = new Vet(3, "Linda", "Douglas");
-    vet.addSpecialty(specialtyRepository.findById(2).get());
-    vet.addSpecialty(specialtyRepository.findById(3).get());
-    vetRepository.save(vet);
-    vet = new Vet(4, "Rafael", "Ortega");
-    vet.addSpecialty(specialtyRepository.findById(2).get());
-    vetRepository.save(vet);
-    vet = new Vet(5, "Henry", "Stevens");
-    vetRepository.save(vet);
-    vet = new Vet(6, "Sharon", "Jenkins");
-    vetRepository.save(vet);
   }
 
   private void preloadOwners() {
@@ -154,33 +112,6 @@ public class InitDatasourceConfig {
     } catch (ParseException e) {
       e.printStackTrace();
     }
-  }
-
-  private void preloadVisits() {
-    DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-    Visit visit;
-    try {
-      visit = new Visit(1, petRepository.findById(7), df.parse("2013-01-01"), "rabies shot");
-      visitRepository.save(visit);
-      visit = new Visit(2, petRepository.findById(8), df.parse("2013-01-02"), "rabies shot");
-      visitRepository.save(visit);
-      visit = new Visit(3, petRepository.findById(8), df.parse("2013-01-03"), "neutered");
-      visitRepository.save(visit);
-      visit = new Visit(4, petRepository.findById(7), df.parse("2013-01-04"), "spayed");
-      visitRepository.save(visit);
-    } catch (ParseException e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void preloadSpecialties() {
-    Specialty specialty;
-    specialty = new Specialty(1, "radiology");
-    specialtyRepository.save(specialty);
-    specialty = new Specialty(2, "surgery");
-    specialtyRepository.save(specialty);
-    specialty = new Specialty(3, "dentistry");
-    specialtyRepository.save(specialty);
   }
 
 }

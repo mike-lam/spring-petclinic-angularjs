@@ -13,13 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.samples.petclinic.web;
+package org.springframework.samples.petclinic.vet;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+import org.springframework.samples.petclinic.model.NamedEntity;
 
 /**
- * @author Antoine Rey
+ * Models a {@link Vet Vet's} specialty (for example, dentistry).
+ *
+ * @author Juergen Hoeller
  */
-@CrossOrigin
-abstract class AbstractResourceController {
+@Entity
+@Table(name = "specialties")
+public class Specialty extends NamedEntity {
+
+  public Specialty() {
+  }
+
+  public Specialty(int id, String name) {
+    this.setId(id);
+    this.setName(name);
+  }
+
 }

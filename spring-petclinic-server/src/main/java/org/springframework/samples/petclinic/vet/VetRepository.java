@@ -13,24 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.samples.petclinic.model;
+package org.springframework.samples.petclinic.vet;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
- * @author Juergen Hoeller Can be Cat, Dog, Hamster...
+ * Repository class for <code>Vet</code> domain objects All method names are compliant with Spring Data naming
+ * conventions so this interface can easily be extended for Spring Data See here:
+ * http://static.springsource.org/spring-data/jpa/docs/current/reference/html/jpa.repositories.html#jpa.query-methods.query-creation
+ *
+ * @author Ken Krebs
+ * @author Juergen Hoeller
+ * @author Sam Brannen
+ * @author Michael Isvy
  */
-@Entity
-@Table(name = "types")
-public class PetType extends NamedEntity {
-
-  public PetType() {
-  }
-
-  public PetType(int i, String name) {
-    this.setId(i);
-    this.setName(name);
-  }
-
+public interface VetRepository extends JpaRepository<Vet, Integer> {
 }

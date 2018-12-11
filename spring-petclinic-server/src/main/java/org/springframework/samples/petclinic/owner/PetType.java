@@ -1,5 +1,4 @@
 /*
-/*
  * Copyright 2002-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,31 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.samples.petclinic.model;
+package org.springframework.samples.petclinic.owner;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import org.springframework.samples.petclinic.model.NamedEntity;
 
 /**
- * Simple domain object representing a list of veterinarians. Mostly here to be used for the 'vets' {@link
- * org.springframework.web.servlet.view.xml.MarshallingView}.
- *
- * @author Arjen Poutsma
+ * @author Juergen Hoeller Can be Cat, Dog, Hamster...
  */
-@XmlRootElement
-public class Vets {
+@Entity
+@Table(name = "types")
+public class PetType extends NamedEntity {
 
-    private List<Vet> vets;
+  public PetType() {
+  }
 
-    @XmlElement
-    public List<Vet> getVetList() {
-        if (vets == null) {
-            vets = new ArrayList<>();
-        }
-        return vets;
-    }
+  public PetType(int i, String name) {
+    this.setId(i);
+    this.setName(name);
+  }
 
 }
