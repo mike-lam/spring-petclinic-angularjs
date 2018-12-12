@@ -64,9 +64,9 @@ public class Owner extends Person {
   public Owner() {
   }
 
-  public Owner(int i, String firtsName, String lastName, String address, String city, String telephone) {
+  public Owner(int i, String firstName, String lastName, String address, String city, String telephone) {
     this.setId(i);
-    this.setFirstName(firtsName);
+    this.setFirstName(firstName);
     this.setLastName(lastName);
     this.setAddress(address);
     this.setCity(city);

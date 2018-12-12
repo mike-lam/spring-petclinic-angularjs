@@ -8,7 +8,6 @@ import javax.validation.constraints.Size;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
-import org.springframework.samples.petclinic.service.ClinicService;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,52 +23,47 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @RestController
 public class PetResource {
 
-  private final ClinicService clinicService;
-
   @Autowired
-  public PetResource(ClinicService clinicService) {
-    this.clinicService = clinicService;
-  }
+  private PetTypeRepository petTypeRepository;
+  @Autowired
+  private PetRepository petRepository;
+  @Autowired
+  private OwnerRepository ownerRepository;
 
   @GetMapping("/petTypes")
   Collection<PetType> getPetTypes() {
-    return clinicService.findPetTypes();
+    return petTypeRepository.findAll();
   }
 
   @PostMapping("/owners/{ownerId}/pets")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void processCreationForm(@RequestBody PetRequest petRequest, @PathVariable("ownerId") int ownerId) {
-
     Pet pet = new Pet();
-    Owner owner = this.clinicService.findOwnerById(ownerId);
+    Owner owner = ownerRepository.findById(ownerId).get();
     owner.addPet(pet);
-
     save(pet, petRequest);
   }
 
   @PutMapping("/owners/{ownerId}/pets/{petId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void processUpdateForm(@RequestBody PetRequest petRequest) {
-    save(clinicService.findPetById(petRequest.getId()), petRequest);
+    save(petRepository.findById(petRequest.getId()), petRequest);
   }
 
   private void save(Pet pet, PetRequest petRequest) {
-
     pet.setName(petRequest.getName());
     pet.setBirthDate(petRequest.getBirthDate());
-
-    for (PetType petType : clinicService.findPetTypes()) {
+    for (PetType petType : petTypeRepository.findAll()) {
       if (petType.getId() == petRequest.getTypeId()) {
         pet.setType(petType);
       }
     }
-
-    clinicService.savePet(pet);
+    petRepository.save(pet);
   }
 
   @GetMapping("/owners/*/pets/{petId}")
   public PetDetails findPet(@PathVariable("petId") int petId) {
-    Pet pet = this.clinicService.findPetById(petId);
+    Pet pet = this.petRepository.findById(petId);
     return new PetDetails(pet);
   }
 

@@ -6,7 +6,6 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.samples.petclinic.service.ClinicService;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,12 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class OwnerResource {
 
-  private final ClinicService clinicService;
-
   @Autowired
-  public OwnerResource(ClinicService clinicService) {
-    this.clinicService = clinicService;
-  }
+  private OwnerRepository ownerRepository;
 
   @InitBinder
   public void setAllowedFields(WebDataBinder dataBinder) {
@@ -35,7 +30,7 @@ public class OwnerResource {
   }
 
   private Owner retrieveOwner(int ownerId) {
-    return this.clinicService.findOwnerById(ownerId);
+    return this.ownerRepository.findById(ownerId).get();
   }
 
   /**
@@ -44,7 +39,7 @@ public class OwnerResource {
   @RequestMapping(value = "/owners", method = RequestMethod.POST)
   @ResponseStatus(HttpStatus.CREATED)
   public void createOwner(@Valid @RequestBody Owner owner) {
-    this.clinicService.saveOwner(owner);
+    this.ownerRepository.save(owner);
   }
 
   /**
@@ -60,7 +55,7 @@ public class OwnerResource {
    */
   @GetMapping("/owners/list")
   public Collection<Owner> findAll() {
-    return clinicService.findAll();
+    return ownerRepository.findAll();
   }
 
   /**
@@ -75,7 +70,7 @@ public class OwnerResource {
     ownerModel.setCity(ownerRequest.getCity());
     ownerModel.setAddress(ownerRequest.getAddress());
     ownerModel.setTelephone(ownerRequest.getTelephone());
-    this.clinicService.saveOwner(ownerModel);
+    this.ownerRepository.save(ownerModel);
     return ownerModel;
   }
 
