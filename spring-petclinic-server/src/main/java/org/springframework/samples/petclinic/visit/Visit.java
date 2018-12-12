@@ -19,18 +19,15 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
 
+import org.springframework.core.style.ToStringCreator;
 import org.springframework.samples.petclinic.model.BaseEntity;
-import org.springframework.samples.petclinic.owner.Pet;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Simple JavaBean domain object representing a visit.
@@ -56,13 +53,7 @@ public class Visit extends BaseEntity {
   @Column(name = "description")
   private String description;
 
-  /**
-   * Holds value of property pet.
-   */
-  @ManyToOne
-  @JoinColumn(name = "pet_id")
-  @JsonIgnore
-  private Pet pet;
+  private Integer petId;
 
   /**
    * Creates a new instance of Visit for the current date
@@ -71,9 +62,9 @@ public class Visit extends BaseEntity {
     this.date = new Date();
   }
 
-  public Visit(int id, Pet pet, Date visit_date, String description) {
+  public Visit(int id, Integer petId, Date visit_date, String description) {
     this.setId(id);
-    this.setPet(pet);
+    this.setPetId(petId);
     this.setDate(visit_date);
     this.setDescription(description);
   }
@@ -121,8 +112,8 @@ public class Visit extends BaseEntity {
    *
    * @return Value of property pet.
    */
-  public Pet getPet() {
-    return this.pet;
+  public Integer getPetId() {
+    return this.petId;
   }
 
   /**
@@ -131,8 +122,14 @@ public class Visit extends BaseEntity {
    * @param pet
    *          New value of property pet.
    */
-  public void setPet(Pet pet) {
-    this.pet = pet;
+  public void setPetId(Integer petId) {
+    this.petId = petId;
+  }
+
+  @Override
+  public String toString() {
+    return new ToStringCreator(this).append("id", this.getId()).append("petId", this.getPetId())
+        .append("date", this.getDate()).toString();
   }
 
 }

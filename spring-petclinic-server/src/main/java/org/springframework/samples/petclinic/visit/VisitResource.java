@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class VisitResource {
 
   private final ClinicService clinicService;
+  @Autowired
+  private VisitRepository visitRepository;
 
   @Autowired
   public VisitResource(ClinicService clinicService) {
@@ -27,13 +29,12 @@ public class VisitResource {
   @PostMapping("/owners/{ownerId}/pets/{petId}/visits")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void create(@Valid @RequestBody Visit visit, @PathVariable("petId") int petId) {
-
-    clinicService.findPetById(petId).addVisit(visit);
+    visit.setPetId(petId);
     clinicService.saveVisit(visit);
   }
 
   @GetMapping("/owners/{ownerId}/pets/{petId}/visits")
   public Object visits(@PathVariable("petId") int petId) {
-    return clinicService.findPetById(petId).getVisits();
+    return visitRepository.findByPetId(petId);
   }
 }

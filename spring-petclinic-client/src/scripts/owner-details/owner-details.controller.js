@@ -6,5 +6,11 @@ angular.module('ownerDetails')
 
         $http.get('owners/' + $stateParams.ownerId).then(function (resp) {
             self.owner = resp.data;
+            angular.forEach(self.owner.pets, function (value, key) {
+                $http.get('owners/' + $stateParams.ownerId+'/pets/'+value.id+'/visits').then(function (resp) {
+                	value.visits = resp.data;
+                });
+            }); 
         });
+        
     }]);
