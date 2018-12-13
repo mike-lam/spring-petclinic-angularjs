@@ -1,13 +1,14 @@
 package org.springframework.samples.petclinic.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Iterator;
+import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,8 +22,10 @@ public abstract class AbstractRestControllerTest {
   @Autowired
   protected ObjectMapper objectMapper;
 
-  protected void get(String path, HttpStatus expectedStatus, String expectedResponse) throws Exception {
+  protected void get(String path, HttpStatus expectedStatus, String expectedResponse, Properties properties)
+      throws Exception {
     HttpURLConnection connection = getConnection(path);
+    setProperties(properties, connection);
     connection.setRequestMethod("GET");
     assertEquals(expectedStatus.value(), connection.getResponseCode());
     if (expectedResponse != null) {
@@ -31,9 +34,10 @@ public abstract class AbstractRestControllerTest {
     }
   }
 
-  protected void post(String path, HttpStatus expectedStatus, String content, String expectedResponse)
-      throws Exception {
+  protected void post(String path, HttpStatus expectedStatus, String content, String expectedResponse,
+      Properties properties) throws Exception {
     HttpURLConnection connection = getConnection(path);
+    setProperties(properties, connection);
     connection.setRequestMethod("POST");
     setRequestBody(content, connection);
     assertEquals(expectedStatus.value(), connection.getResponseCode());
@@ -43,8 +47,10 @@ public abstract class AbstractRestControllerTest {
     }
   }
 
-  protected void put(String path, HttpStatus expectedStatus, String content, String expectedResponse) throws Exception {
+  protected void put(String path, HttpStatus expectedStatus, String content, String expectedResponse,
+      Properties properties) throws Exception {
     HttpURLConnection connection = getConnection(path);
+    setProperties(properties, connection);
     connection.setRequestMethod("PUT");
     setRequestBody(content, connection);
     assertEquals(expectedStatus.value(), connection.getResponseCode());
@@ -60,47 +66,6 @@ public abstract class AbstractRestControllerTest {
 
   protected String toJson(Object obj) throws Exception {
     return objectMapper.writeValueAsString(obj);
-  }
-
-  ////////// FIXME delete some below //////////////////////////////////////////////////////
-  protected void putNotFound(String in, String path) throws Exception {
-    HttpURLConnection connection = getConnection(path);
-    connection.setRequestMethod("PUT");
-    setRequestBody(in, connection);
-    assertEquals(HttpStatus.NOT_FOUND.value(), connection.getResponseCode());
-  }
-
-  protected void delete(String path) throws Exception {
-    HttpURLConnection connection = getConnection(path);
-    connection.setRequestMethod("DELETE");
-    assertEquals(HttpStatus.OK.value(), connection.getResponseCode());
-  }
-
-  protected void put(String in, String path, String expected) throws Exception {
-    HttpURLConnection connection = getConnection(path);
-    connection.setRequestMethod("PUT");
-    setRequestBody(in, connection);
-    assertEquals(HttpStatus.OK.value(), connection.getResponseCode());
-    String response = getResponseBody(connection);
-    assertEquals(expected, response);
-  }
-
-  protected void post(String in, String path, String expected) throws Exception {
-    HttpURLConnection connection = getConnection(path);
-    connection.setRequestMethod("POST");
-    setRequestBody(in, connection);
-    assertEquals(HttpStatus.OK.value(), connection.getResponseCode());
-    String response = getResponseBody(connection);
-    assertEquals(expected, response);
-  }
-
-  protected void postValidationError(String in, String path, String errMsg) throws Exception {
-    HttpURLConnection connection = getConnection(path);
-    connection.setRequestMethod("POST");
-    setRequestBody(in, connection);
-    connection.getResponseCode();
-    assertEquals(HttpStatus.BAD_REQUEST.value(), connection.getResponseCode());
-    assertTrue(getErrorStream(connection).contains(errMsg));
   }
 
   protected HttpURLConnection getConnection(String path) throws Exception {
@@ -130,15 +95,66 @@ public abstract class AbstractRestControllerTest {
     return ret.toString();
   }
 
-  protected String getErrorStream(HttpURLConnection connection) throws Exception {
-    StringBuilder ret = new StringBuilder();
-    BufferedReader inBuff = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
-    String line;
-    while ((line = inBuff.readLine()) != null) {
-      ret.append(line);
+  private void setProperties(Properties properties, HttpURLConnection connection) {
+    if (properties != null) {
+      for (Iterator iterator = properties.keySet().iterator(); iterator.hasNext();) {
+        String key = (String) iterator.next();
+        String value = properties.getProperty(key);
+        connection.setRequestProperty(key, value);
+      }
     }
-    inBuff.close();
-    return ret.toString();
   }
+
+  // ////////// FIXME delete some below //////////////////////////////////////////////////////
+  // protected void putNotFound(String in, String path) throws Exception {
+  // HttpURLConnection connection = getConnection(path);
+  // connection.setRequestMethod("PUT");
+  // setRequestBody(in, connection);
+  // assertEquals(HttpStatus.NOT_FOUND.value(), connection.getResponseCode());
+  // }
+  //
+  // protected void delete(String path) throws Exception {
+  // HttpURLConnection connection = getConnection(path);
+  // connection.setRequestMethod("DELETE");
+  // assertEquals(HttpStatus.OK.value(), connection.getResponseCode());
+  // }
+  //
+  // protected void put(String in, String path, String expected) throws Exception {
+  // HttpURLConnection connection = getConnection(path);
+  // connection.setRequestMethod("PUT");
+  // setRequestBody(in, connection);
+  // assertEquals(HttpStatus.OK.value(), connection.getResponseCode());
+  // String response = getResponseBody(connection);
+  // assertEquals(expected, response);
+  // }
+  //
+  // protected void post(String in, String path, String expected) throws Exception {
+  // HttpURLConnection connection = getConnection(path);
+  // connection.setRequestMethod("POST");
+  // setRequestBody(in, connection);
+  // assertEquals(HttpStatus.OK.value(), connection.getResponseCode());
+  // String response = getResponseBody(connection);
+  // assertEquals(expected, response);
+  // }
+  //
+  // protected void postValidationError(String in, String path, String errMsg) throws Exception {
+  // HttpURLConnection connection = getConnection(path);
+  // connection.setRequestMethod("POST");
+  // setRequestBody(in, connection);
+  // connection.getResponseCode();
+  // assertEquals(HttpStatus.BAD_REQUEST.value(), connection.getResponseCode());
+  // assertTrue(getErrorStream(connection).contains(errMsg));
+  // }
+  //
+  // protected String getErrorStream(HttpURLConnection connection) throws Exception {
+  // StringBuilder ret = new StringBuilder();
+  // BufferedReader inBuff = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+  // String line;
+  // while ((line = inBuff.readLine()) != null) {
+  // ret.append(line);
+  // }
+  // inBuff.close();
+  // return ret.toString();
+  // }
 
 }
