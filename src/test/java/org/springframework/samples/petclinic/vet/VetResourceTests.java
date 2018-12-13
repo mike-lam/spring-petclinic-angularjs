@@ -1,43 +1,27 @@
 package org.springframework.samples.petclinic.vet;
 
-import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.Arrays;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.samples.petclinic.vet.Vet;
-import org.springframework.samples.petclinic.vet.VetRepository;
-import org.springframework.samples.petclinic.vet.VetResource;
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.http.HttpStatus;
+import org.springframework.samples.petclinic.test.AbstractRestControllerTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(VetResource.class)
-public class VetResourceTests {
+@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
+@AutoConfigureTestEntityManager
+public class VetResourceTests extends AbstractRestControllerTest {
 
-  @Autowired
-  private MockMvc mvc;
-
-  @MockBean
-  private VetRepository vetRepository;
-
+  // @GetMapping("/vets")
   @Test
   public void vets_shouldGetAListOfVetsInJSonFormat() throws Exception {
-    Vet vet = new Vet();
-    vet.setId(1);
-
-    given(vetRepository.findAll()).willReturn(Arrays.asList(vet));
-
-    mvc.perform(get("/vets").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-        .andExpect(jsonPath("$[0].id").value(1));
+    String path = getPath("/vets");
+    String expectedResponse = "[{\"id\":1,\"firstName\":\"James\",\"lastName\":\"Carter\",\"specialties\":[],\"nrOfSpecialties\":0},{\"id\":2,\"firstName\":\"Helen\",\"lastName\":\"Leary\",\"specialties\":[{\"id\":1,\"name\":\"radiology\"}],\"nrOfSpecialties\":1},{\"id\":3,\"firstName\":\"Linda\",\"lastName\":\"Douglas\",\"specialties\":[{\"id\":3,\"name\":\"dentistry\"},{\"id\":2,\"name\":\"surgery\"}],\"nrOfSpecialties\":2},{\"id\":4,\"firstName\":\"Rafael\",\"lastName\":\"Ortega\",\"specialties\":[{\"id\":2,\"name\":\"surgery\"}],\"nrOfSpecialties\":1},{\"id\":5,\"firstName\":\"Henry\",\"lastName\":\"Stevens\",\"specialties\":[],\"nrOfSpecialties\":0},{\"id\":6,\"firstName\":\"Sharon\",\"lastName\":\"Jenkins\",\"specialties\":[],\"nrOfSpecialties\":0}]";
+    this.get(path, HttpStatus.OK, expectedResponse);
+    // mvc.perform(get("/vets").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+    // .andExpect(jsonPath("$[0].id").value(1));
   }
 
 }
