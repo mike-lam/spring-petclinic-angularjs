@@ -1,0 +1,20 @@
+<h2>Users</h2>
+
+<form onsubmit="void(0)" style="max-width: 20em; margin-top: 2em;">
+    <div class="form-group">
+        <input type="text" class="form-control" placeholder="Search Filter" ng-model="$ctrl.query" />
+    </div>
+</form>
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>Name</th>
+    </tr>
+    </thead>
+    <!-- tr ng-repeat="user in $ctrl.users | filter:$ctrl.query track by user.id"-->
+    <tr ng-repeat="user in $ctrl.users | orderBy:['firstName','lastName']">
+        <td>{{user.firstName}} {{user.lastName}}</td>
+    </tr>
+    
+</table>
