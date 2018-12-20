@@ -1,5 +1,8 @@
 package org.springframework.samples.petclinic.vet;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Properties;
 
 import org.junit.BeforeClass;
@@ -12,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.samples.petclinic.test.AbstractRestControllerTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
@@ -31,8 +36,13 @@ public class VetResourceTests extends AbstractRestControllerTest {
   @Test
   public void vets_shouldGetAListOfVetsInJSonFormat() throws Exception {
     String path = getPath("/vets");
-    String expectedResponse = "[{\"id\":1,\"firstName\":\"James\",\"lastName\":\"Carter\",\"specialties\":[],\"nrOfSpecialties\":0},{\"id\":2,\"firstName\":\"Helen\",\"lastName\":\"Leary\",\"specialties\":[{\"id\":1,\"name\":\"radiology\"}],\"nrOfSpecialties\":1},{\"id\":3,\"firstName\":\"Linda\",\"lastName\":\"Douglas\",\"specialties\":[{\"id\":3,\"name\":\"dentistry\"},{\"id\":2,\"name\":\"surgery\"}],\"nrOfSpecialties\":2},{\"id\":4,\"firstName\":\"Rafael\",\"lastName\":\"Ortega\",\"specialties\":[{\"id\":2,\"name\":\"surgery\"}],\"nrOfSpecialties\":1},{\"id\":5,\"firstName\":\"Henry\",\"lastName\":\"Stevens\",\"specialties\":[],\"nrOfSpecialties\":0},{\"id\":6,\"firstName\":\"Sharon\",\"lastName\":\"Jenkins\",\"specialties\":[],\"nrOfSpecialties\":0}]";
-    this.get(path, HttpStatus.OK, expectedResponse, properties);
+    this.get(path, HttpStatus.OK, properties);
+    JsonNode response = this.get(path, HttpStatus.OK, properties);
+    assertTrue(response.get("_embedded").get("vets").isArray()); // cant control order of list
+    assertEquals(20, response.get("page").get("size").asInt());
+    assertEquals(6, response.get("page").get("totalElements").asInt());
+    assertEquals(1, response.get("page").get("totalPages").asInt());
+    assertEquals(0, response.get("page").get("number").asInt());
   }
 
 }
