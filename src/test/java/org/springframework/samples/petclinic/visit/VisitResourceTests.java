@@ -34,7 +34,7 @@ public class VisitResourceTests extends AbstractRestControllerTest {
     String path = getPath("/owners/1/pets/1/visits");
     Date d = new Date();
     Visit visit = new Visit(1, 2, d, "String description");
-    String content = toJson(visit);
+    String content = toJsonString(visit);
     String expectedResponse = "";
     this.post(path, HttpStatus.NO_CONTENT, content, expectedResponse, properties);
   }

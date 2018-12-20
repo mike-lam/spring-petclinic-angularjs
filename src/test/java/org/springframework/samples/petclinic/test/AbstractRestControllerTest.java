@@ -3,6 +3,7 @@ package org.springframework.samples.petclinic.test;
 import static org.junit.Assert.assertEquals;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
@@ -13,6 +14,7 @@ import java.util.Properties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public abstract class AbstractRestControllerTest {
@@ -21,6 +23,49 @@ public abstract class AbstractRestControllerTest {
 
   @Autowired
   protected ObjectMapper objectMapper;
+
+  ///////////////////////////
+  protected JsonNode get(String path, HttpStatus expectedStatus, Properties properties) throws Exception {
+    HttpURLConnection connection = getConnection(path);
+    setProperties(properties, connection);
+    connection.setRequestMethod("GET");
+    assertEquals(expectedStatus.value(), connection.getResponseCode());
+    String response = getResponseBody(connection);
+    return toJsonNode(response);
+  }
+
+  protected JsonNode delete(String path, HttpStatus expectedStatus, Properties properties) throws Exception {
+    HttpURLConnection connection = getConnection(path);
+    setProperties(properties, connection);
+    connection.setRequestMethod("DELETE");
+    assertEquals(expectedStatus.value(), connection.getResponseCode());
+    String response = getResponseBody(connection);
+    return toJsonNode(response);
+  }
+
+  protected JsonNode post(String path, HttpStatus expectedStatus, String content, Properties properties)
+      throws Exception {
+    HttpURLConnection connection = getConnection(path);
+    setProperties(properties, connection);
+    connection.setRequestMethod("POST");
+    setRequestBody(content, connection);
+    assertEquals(expectedStatus.value(), connection.getResponseCode());
+    String response = getResponseBody(connection);
+    return toJsonNode(response);
+  }
+
+  protected JsonNode put(String path, HttpStatus expectedStatus, String content, Properties properties)
+      throws Exception {
+    HttpURLConnection connection = getConnection(path);
+    setProperties(properties, connection);
+    connection.setRequestMethod("PUT");
+    setRequestBody(content, connection);
+    assertEquals(expectedStatus.value(), connection.getResponseCode());
+    String response = getResponseBody(connection);
+    return toJsonNode(response);
+  }
+
+  /////////////////
 
   protected void get(String path, HttpStatus expectedStatus, String expectedResponse, Properties properties)
       throws Exception {
@@ -60,12 +105,21 @@ public abstract class AbstractRestControllerTest {
     }
   }
 
+  /////////
+
   protected String getPath(String suffix) {
     return PATH + suffix;
   }
 
-  protected String toJson(Object obj) throws Exception {
+  // FIXME change this to toJsonString
+  protected String toJsonString(Object obj) throws Exception {
     return objectMapper.writeValueAsString(obj);
+  }
+
+  protected JsonNode toJsonNode(String jsonStr) throws IOException {
+    JsonNode jsonNode = objectMapper.readTree(jsonStr);
+    // sample use String color = jsonNode.get("color").asText();
+    return jsonNode;
   }
 
   protected HttpURLConnection getConnection(String path) throws Exception {

@@ -39,7 +39,7 @@ public class PetResourceTests extends AbstractRestControllerTest {
   @Test
   public void owners_ownerId_pets_shouldGetStatusNoContent() throws Exception {
     String path = getPath("/owners/1/pets");
-    String content = toJson(setupPet());
+    String content = toJsonString(setupPet());
     String expectedResponse = "";
     this.post(path, HttpStatus.NO_CONTENT, content, expectedResponse, properties);
   }
@@ -52,7 +52,7 @@ public class PetResourceTests extends AbstractRestControllerTest {
     petRequest.setId(1);
     petRequest.setName("some name");
     petRequest.setTypeId(1);
-    String content = toJson(petRequest);
+    String content = toJsonString(petRequest);
     String expectedResponse = "";
     this.put(path, HttpStatus.NO_CONTENT, content, expectedResponse, properties);
   }

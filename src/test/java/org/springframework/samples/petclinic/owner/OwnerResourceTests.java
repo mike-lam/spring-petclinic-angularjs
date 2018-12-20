@@ -32,7 +32,7 @@ public class OwnerResourceTests extends AbstractRestControllerTest {
   public void owners_shouldGetStatusCreated() throws Exception {
     String path = getPath("/owners");
     Owner owner = new Owner(999, "firtsName", "lastName", "String address", "city", "6131112222");
-    String content = toJson(owner);
+    String content = toJsonString(owner);
     String expectedResponse = "";
     this.post(path, HttpStatus.CREATED, content, expectedResponse, properties);
   }
@@ -58,7 +58,7 @@ public class OwnerResourceTests extends AbstractRestControllerTest {
   public void owners_ownerId_shouldPutAOwnersInJSonFormat() throws Exception {
     String path = getPath("/owners/3");
     Owner owner = new Owner(3, "firstName", "lastName", "String address", "city", "6131112222");
-    String content = toJson(owner);
+    String content = toJsonString(owner);
     String expectedResponse = "{\"id\":3,\"firstName\":\"firstName\",\"lastName\":\"lastName\",\"address\":\"String address\",\"city\":\"city\",\"telephone\":\"6131112222\",\"pets\":[{\"id\":4,\"name\":\"Jewel\",\"birthDate\":\"2010-03-07\",\"type\":{\"id\":2,\"name\":\"dog\"}},{\"id\":3,\"name\":\"Rosy\",\"birthDate\":\"2011-04-17\",\"type\":{\"id\":2,\"name\":\"dog\"}}]}";
     this.put(path, HttpStatus.OK, content, expectedResponse, properties);
   }

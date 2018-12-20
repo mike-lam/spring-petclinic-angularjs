@@ -1,5 +1,9 @@
 package org.springframework.samples.petclinic.user;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Properties;
 
 import org.junit.BeforeClass;
@@ -13,12 +17,16 @@ import org.springframework.http.MediaType;
 import org.springframework.samples.petclinic.test.AbstractRestControllerTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @AutoConfigureTestEntityManager
 public class UserResourceTests extends AbstractRestControllerTest {
 
   static Properties properties;
+
+  static int listCountadjust = 0;
 
   @BeforeClass
   static public void BeforeClass() {
@@ -31,26 +39,37 @@ public class UserResourceTests extends AbstractRestControllerTest {
   @Test
   public void users_shouldGetStatusCreated() throws Exception {
     String path = getPath("/users");
-    User user = new User(999, "firtsName", "lastName"); // , "String address", "city", "6131112222");
-    String content = toJson(user);
-    String expectedResponse = "{  \"firstName\" : \"firtsName\",  \"lastName\" : \"lastName\",  \"_links\" : {    \"self\" : {      \"href\" : \"http://localhost:8080/users/6\"    },    \"user\" : {      \"href\" : \"http://localhost:8080/users/6\"    }  }}";
-    this.post(path, HttpStatus.CREATED, content, expectedResponse, properties);
+    User user = new User(999, "firstName", "lastName"); // , "String address", "city", "6131112222");
+    String content = toJsonString(user);
+    JsonNode response = this.post(path, HttpStatus.CREATED, content, properties);
+    listCountadjust++;
+    assertEquals("firstName", response.get("firstName").asText());
+    assertEquals("lastName", response.get("lastName").asText());
+    assertEquals("http://localhost:8080/users/6", response.get("_links").get("self").get("href").asText());
+    assertEquals("http://localhost:8080/users/6", response.get("_links").get("user").get("href").asText());
   }
 
   // @GetMapping("/users/{userId}")
   @Test
   public void users_userId_shouldGetAUserInJSonFormat() throws Exception {
     String path = getPath("/users/1");
-    String expectedResponse = "{  \"firstName\" : \"Michel\",  \"lastName\" : \"Carter\",  \"_links\" : {    \"self\" : {      \"href\" : \"http://localhost:8080/users/1\"    },    \"user\" : {      \"href\" : \"http://localhost:8080/users/1\"    }  }}";
-    this.get(path, HttpStatus.OK, expectedResponse, properties);
+    JsonNode response = this.get(path, HttpStatus.OK, properties);
+    assertEquals("Michel", response.get("firstName").asText());
+    assertEquals("Carter", response.get("lastName").asText());
+    assertEquals("http://localhost:8080/users/1", response.get("_links").get("self").get("href").asText());
+    assertEquals("http://localhost:8080/users/1", response.get("_links").get("user").get("href").asText());
   }
 
-  // @GetMapping("/users/list")
+  // @GetMapping("/users")
   @Test
   public void users_list_shouldGetAListOfUsersInJSonFormat() throws Exception {
     String path = getPath("/users");
-    String expectedResponse = null; // because of post can't in no order can't check
-    this.get(path, HttpStatus.OK, expectedResponse, properties);
+    JsonNode response = this.get(path, HttpStatus.OK, properties);
+    assertTrue(response.get("_embedded").get("users").isArray()); // cant control order of list
+    assertEquals(20, response.get("page").get("size").asInt());
+    assertEquals(5 + listCountadjust, response.get("page").get("totalElements").asInt());
+    assertEquals(1, response.get("page").get("totalPages").asInt());
+    assertEquals(0, response.get("page").get("number").asInt());
   }
 
   // @PutMapping("/users/{userId}")
@@ -58,9 +77,21 @@ public class UserResourceTests extends AbstractRestControllerTest {
   public void users_userId_shouldPutAUsersInJSonFormat() throws Exception {
     String path = getPath("/users/3");
     User user = new User(3, "firstName", "lastName"); // , "String address", "city", "6131112222");
-    String content = toJson(user);
-    String expectedResponse = "{  \"firstName\" : \"firstName\",  \"lastName\" : \"lastName\",  \"_links\" : {    \"self\" : {      \"href\" : \"http://localhost:8080/users/3\"    },    \"user\" : {      \"href\" : \"http://localhost:8080/users/3\"    }  }}";
-    this.put(path, HttpStatus.OK, content, expectedResponse, properties);
+    String content = toJsonString(user);
+    JsonNode response = this.put(path, HttpStatus.OK, content, properties);
+    assertEquals("firstName", response.get("firstName").asText());
+    assertEquals("lastName", response.get("lastName").asText());
+    assertEquals("http://localhost:8080/users/3", response.get("_links").get("self").get("href").asText());
+    assertEquals("http://localhost:8080/users/3", response.get("_links").get("user").get("href").asText());
+  }
+
+  // @DeleteMapping("/users/{userId}")
+  @Test
+  public void users_userId_shouldDeleteAUsersInJSonFormat() throws Exception {
+    String path = getPath("/users/2");
+    JsonNode response = this.delete(path, HttpStatus.NO_CONTENT, properties);
+    listCountadjust--;
+    assertNull(response);
   }
 
 }
