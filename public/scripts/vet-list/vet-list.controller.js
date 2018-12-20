@@ -5,6 +5,6 @@ angular.module('vetList')
         var self = this;
 
         $http.get('vets').then(function (resp) {
-            self.vetList = resp.data;
+            self.vetList = resp.data._embedded.vets;
         });
     }]);
