@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin
 @RestController
-public class VisitResource {
+public class OldVisitResource {
 
   @Autowired
   private VisitRepository visitRepository;
