@@ -54,6 +54,7 @@ public class UserResourceTests extends AbstractRestControllerTest {
   public void users_userId_shouldGetAUserInJSonFormat() throws Exception {
     String path = getPath("/users/1");
     JsonNode response = this.get(path, HttpStatus.OK, properties);
+    assertEquals(1, response.get("id").asInt());
     assertEquals("Michel", response.get("firstName").asText());
     assertEquals("Carter", response.get("lastName").asText());
     assertEquals("http://localhost:8080/users/1", response.get("_links").get("self").get("href").asText());

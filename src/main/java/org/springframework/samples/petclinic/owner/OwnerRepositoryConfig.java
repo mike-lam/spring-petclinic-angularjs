@@ -4,10 +4,13 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 
 @Configuration
 public class OwnerRepositoryConfig {
@@ -18,6 +21,15 @@ public class OwnerRepositoryConfig {
   private PetTypeRepository petTypeRepository;
   @Autowired
   private OwnerRepository ownerRepository;
+
+  @Autowired
+  private RepositoryRestConfiguration repositoryRestConfiguration;
+
+  @PostConstruct
+  public void exposeIds() {
+    this.repositoryRestConfiguration.setReturnBodyForPutAndPost(true);
+    this.repositoryRestConfiguration.exposeIdsFor(Owner.class, Pet.class, PetType.class);
+  }
 
   @EventListener(ApplicationReadyEvent.class)
   public void doSomethingAfterStartup() {

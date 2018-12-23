@@ -1,5 +1,9 @@
 package org.springframework.samples.petclinic.owner;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Date;
 import java.util.Properties;
 
 import org.junit.BeforeClass;
@@ -13,12 +17,16 @@ import org.springframework.http.MediaType;
 import org.springframework.samples.petclinic.test.AbstractRestControllerTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 @AutoConfigureTestEntityManager
 public class PetResourceTests extends AbstractRestControllerTest {
 
   static Properties properties;
+
+  static int listCountadjust = 0;
 
   @BeforeClass
   static public void BeforeClass() {
@@ -27,56 +35,81 @@ public class PetResourceTests extends AbstractRestControllerTest {
     properties.setProperty("Accept", MediaType.APPLICATION_JSON.toString());
   }
 
-  // @GetMapping("/petsTypes")
+  // // @PostMapping("/pets") FIXME
   @Test
-  public void petTypes_shouldGetAListOfPetTypesInJSonFormat() throws Exception {
-    String path = getPath("/petTypes");
-    String expectedResponse = "[{\"id\":1,\"name\":\"cat\"},{\"id\":2,\"name\":\"dog\"},{\"id\":3,\"name\":\"lizard\"},{\"id\":4,\"name\":\"snake\"},{\"id\":5,\"name\":\"bird\"},{\"id\":6,\"name\":\"hamster\"}]";
-    this.get(path, HttpStatus.OK, expectedResponse, properties);
+  public void pets_shouldGetStatusCreated() throws Exception {
+    String path = getPath("/pets");
+    Date d = new Date();
+    Pet pet = new Pet(14, "XXXX", d, new PetType(1, "cat"),
+        new Owner(1, "George", "Franklin", "110 W. Liberty St.", "Madison", "6085551023"));
+    String content = toJsonString(pet);
+    JsonNode response = this.post(path, HttpStatus.CREATED, content, properties);
+    listCountadjust++;
+    System.out.println(response);
+    assertEquals("XXXX", response.get("name").asText());
+    // not same date format assertEquals(d.toString(), response.get("birthDate").asText());
+    assertEquals("http://localhost:8080/pets/14/type", response.get("_links").get("type").get("href").asText());
+    assertEquals("http://localhost:8080/pets/14/owner", response.get("_links").get("owner").get("href").asText());
+    assertEquals("http://localhost:8080/pets/14", response.get("_links").get("self").get("href").asText());
+    assertEquals("http://localhost:8080/pets/14", response.get("_links").get("pet").get("href").asText());
   }
 
-  // @PostMapping("/owners/{ownerId}/pets")
+  // @GetMapping("/pets/{petId}")
   @Test
-  public void owners_ownerId_pets_shouldGetStatusNoContent() throws Exception {
-    String path = getPath("/owners/1/pets");
-    String content = toJsonString(setupPet());
-    String expectedResponse = "";
-    this.post(path, HttpStatus.NO_CONTENT, content, expectedResponse, properties);
+  public void pets_petId_shouldGetAPetInJSonFormat() throws Exception {
+    String path = getPath("/pets/1");
+    JsonNode response = this.get(path, HttpStatus.OK, properties);
+    assertEquals("Leo", response.get("name").asText());
+    assertEquals("2010-09-07", response.get("birthDate").asText());
+    assertEquals("http://localhost:8080/pets/1/type", response.get("_links").get("type").get("href").asText());
+    assertEquals("http://localhost:8080/pets/1/owner", response.get("_links").get("owner").get("href").asText());
+    assertEquals("http://localhost:8080/pets/1", response.get("_links").get("self").get("href").asText());
+    assertEquals("http://localhost:8080/pets/1", response.get("_links").get("pet").get("href").asText());
   }
 
-  // @PutMapping("/owners/{ownerId}/pets/{petId}")
+  // @GetMapping("/pets")
   @Test
-  public void owners_ownerId_pets_petId_shouldGetAPetInJSonFormat() throws Exception {
-    String path = getPath("/owners/1/pets/1");
-    PetResource.PetRequest petRequest = new PetResource.PetRequest();
-    petRequest.setId(1);
-    petRequest.setName("some name");
-    petRequest.setTypeId(1);
-    String content = toJsonString(petRequest);
-    String expectedResponse = "";
-    this.put(path, HttpStatus.NO_CONTENT, content, expectedResponse, properties);
+  public void pets_shouldGetAListOfOwnersInJSonFormat() throws Exception {
+    String path = getPath("/pets");
+    JsonNode response = this.get(path, HttpStatus.OK, properties);
+    assertTrue(response.get("_embedded").get("pets").isArray()); // cant control order of list
+    assertEquals(20, response.get("page").get("size").asInt());
+    assertEquals(13 + listCountadjust, response.get("page").get("totalElements").asInt());
+    assertEquals(1, response.get("page").get("totalPages").asInt());
+    assertEquals(0, response.get("page").get("number").asInt());
   }
 
-  // @GetMapping("/owners/*/pets/{petId}")
-  @Test
-  public void owners_any_pets_petId_shouldGetAListOfPetTypesInJSonFormat() throws Exception {
-    String path = getPath("/owners/*/pets/1");
-    String expectedResponse = "{\"id\":1,\"name\":\"Leo\",\"owner\":\"George Franklin\",\"birthDate\":\"2010-09-07\",\"type\":{\"id\":1,\"name\":\"cat\"}}";
-    this.get(path, HttpStatus.OK, expectedResponse, properties);
-  }
-
+  // FIXME
+  // // @PutMapping("/pets/{ownerId}")
+  // @Test
+  // public void pets_ownerId_shouldPutAOwnersInJSonFormat() throws Exception {
+  // String path = getPath("/pets/3");
+  // Owner owner = new Owner(3, "firstName", "lastName", "String address", "city", "6131112222");
+  // String content = toJsonString(owner);
+  // JsonNode response = this.put(path, HttpStatus.OK, content, properties);
+  // assertEquals("firstName", response.get("firstName").asText());
+  // assertEquals("lastName", response.get("lastName").asText());
+  // assertEquals("String address", response.get("address").asText());
+  // assertEquals("city", response.get("city").asText());
+  // assertEquals("6131112222", response.get("telephone").asText());
+  // assertEquals("http://localhost:8080/pets/3/pets", response.get("_links").get("pets").get("href").asText());
+  // assertEquals("http://localhost:8080/pets/3", response.get("_links").get("self").get("href").asText());
+  // assertEquals("http://localhost:8080/pets/3", response.get("_links").get("owner").get("href").asText());
+  // }
+  //
   private Pet setupPet() {
     Owner owner = new Owner();
+    owner.setId(1);
     owner.setFirstName("George");
     owner.setLastName("Bush");
     Pet pet = new Pet();
     pet.setName("Basil");
     pet.setId(2);
+    pet.setBirthDate(new Date());
     PetType petType = new PetType();
     petType.setId(6);
     pet.setType(petType);
-    owner.addPet(pet);
+    // owner.addPet(pet);
     return pet;
   }
-
 }

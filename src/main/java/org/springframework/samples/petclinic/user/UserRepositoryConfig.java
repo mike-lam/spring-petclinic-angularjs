@@ -1,9 +1,12 @@
 package org.springframework.samples.petclinic.user;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 
 @Configuration
 public class UserRepositoryConfig {
@@ -28,6 +31,15 @@ public class UserRepositoryConfig {
     userRepository.save(user);
     user = new User(5, "Carole", "AAALeary");
     userRepository.save(user);
+  }
+
+  @Autowired
+  private RepositoryRestConfiguration repositoryRestConfiguration;
+
+  @PostConstruct
+  public void exposeIds() {
+    // this.repositoryRestConfiguration.setReturnBodyForPutAndPost(true);
+    this.repositoryRestConfiguration.exposeIdsFor(User.class);
   }
 
 }
