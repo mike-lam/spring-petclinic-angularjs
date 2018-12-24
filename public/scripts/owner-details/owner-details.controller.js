@@ -3,20 +3,16 @@
 angular.module('ownerDetails')
     .controller('OwnerDetailsController', ['$http', '$stateParams', function ($http, $stateParams) {
         var self = this;
+        debugger;
         $http.get('owners/' + $stateParams.ownerId).then(function (resp) {
             self.owner = resp.data;
-            //angular.forEach(self.owner.pets, function (value, key) {
-            alert(resp.data._links.pets.href);
-                $http.get(resp.data._links.pets.href).then(function (resp) {
-                	alert(JSON.stringify(resp.data));
-                	debugger;
-                    value.owner.pets=resp.data;
-                });
-            //});            
-            angular.forEach(self.owner.pets, function (value, key) {
-                $http.get('visits/search/pet?petId='+value.id).then(function (resp) {
-                    value.visits=resp.data._embedded.visits;
-                });
-            });            
+            self.owner.pets=[];
+            $http.get(self.owner._links.pets.href).then(function (respP) {
+              angular.forEach(respP.data._embedded.pets, function (p, key) {
+            	  debugger;
+              var pet={name:p.name, birthDate:p.birthDate}
+              self.owner.pets.push(pet);
+            });
          });
+        });
     }]);

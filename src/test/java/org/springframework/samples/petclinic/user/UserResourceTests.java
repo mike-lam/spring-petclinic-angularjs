@@ -39,12 +39,13 @@ public class UserResourceTests extends AbstractRestControllerTest {
   @Test
   public void users_shouldGetStatusCreated() throws Exception {
     String path = getPath("/users");
-    User user = new User(999, "firstName", "lastName"); // , "String address", "city", "6131112222");
+    User user = new User(999, "firstName", "lastName", "guest"); // , "String address", "city", "6131112222");
     String content = toJsonString(user);
     JsonNode response = this.post(path, HttpStatus.CREATED, content, properties);
     listCountadjust++;
     assertEquals("firstName", response.get("firstName").asText());
     assertEquals("lastName", response.get("lastName").asText());
+    assertEquals("guest", response.get("role").asText());
     assertEquals("http://localhost:8080/users/6", response.get("_links").get("self").get("href").asText());
     assertEquals("http://localhost:8080/users/6", response.get("_links").get("user").get("href").asText());
   }
@@ -57,6 +58,7 @@ public class UserResourceTests extends AbstractRestControllerTest {
     assertEquals(1, response.get("id").asInt());
     assertEquals("Michel", response.get("firstName").asText());
     assertEquals("Carter", response.get("lastName").asText());
+    assertEquals("papa", response.get("role").asText());
     assertEquals("http://localhost:8080/users/1", response.get("_links").get("self").get("href").asText());
     assertEquals("http://localhost:8080/users/1", response.get("_links").get("user").get("href").asText());
   }
@@ -77,11 +79,12 @@ public class UserResourceTests extends AbstractRestControllerTest {
   @Test
   public void users_userId_shouldPutAUsersInJSonFormat() throws Exception {
     String path = getPath("/users/3");
-    User user = new User(3, "firstName", "lastName"); // , "String address", "city", "6131112222");
+    User user = new User(3, "firstName", "lastName", "guest"); // , "String address", "city", "6131112222");
     String content = toJsonString(user);
     JsonNode response = this.put(path, HttpStatus.OK, content, properties);
     assertEquals("firstName", response.get("firstName").asText());
     assertEquals("lastName", response.get("lastName").asText());
+    assertEquals("guest", response.get("role").asText());
     assertEquals("http://localhost:8080/users/3", response.get("_links").get("self").get("href").asText());
     assertEquals("http://localhost:8080/users/3", response.get("_links").get("user").get("href").asText());
   }

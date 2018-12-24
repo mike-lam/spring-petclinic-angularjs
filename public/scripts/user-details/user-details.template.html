@@ -1,0 +1,30 @@
+<h2>User Information</h2>
+
+<table class="table table-striped">
+    <tr>
+        <th class="col-sm-3">Name</th>
+        <td><b>{{$ctrl.user.firstName}} {{$ctrl.user.lastName}}</b></td>
+    </tr>
+    <tr>
+        <th>Role</th>
+        <td>{{$ctrl.user.role}}</td>
+    </tr>    
+    <tr>
+        <th>Address</th>
+        <td>{{$ctrl.user.address}}</td>
+    </tr>
+    <tr>
+        <th>City</th>
+        <td>{{$ctrl.user.city}}</td>
+    </tr>
+    <tr>
+        <th>Telephone</th>
+        <td>{{$ctrl.user.telephone}}</td>
+    </tr>    
+    <!-- tr>
+        <td>
+            <a class="btn btn-default" ui-sref="userEdit({userId: $ctrl.user.id})">Edit User</a>
+        </td>
+    </tr-->
+</table>
+

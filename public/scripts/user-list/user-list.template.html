@@ -14,7 +14,11 @@
     </thead>
     <!-- tr ng-repeat="user in $ctrl.users | filter:$ctrl.query track by user.id"-->
     <tr ng-repeat="user in $ctrl.users | orderBy:['firstName','lastName']">
-        <td>{{user.firstName}} {{user.lastName}}</td>
+        <td>
+            <a ui-sref="userDetails({ userId: user.id })">
+                {{user.firstName}} {{user.lastName}}
+            </a>
+        </td>
     </tr>
     
 </table>

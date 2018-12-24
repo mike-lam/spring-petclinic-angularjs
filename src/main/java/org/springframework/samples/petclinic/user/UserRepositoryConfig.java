@@ -21,15 +21,15 @@ public class UserRepositoryConfig {
 
   private void preloadUsers() {
     User user;
-    user = new User(1, "Michel", "Carter");
+    user = new User(1, "Michel", "Carter", "papa");
     userRepository.save(user);
-    user = new User(2, "Carole", "Leary");
+    user = new User(2, "Carole", "Leary", "maman");
     userRepository.save(user);
-    user = new User(3, "Daphnee", "Douglas");
+    user = new User(3, "Daphnee", "Dougla", "child");
     userRepository.save(user);
-    user = new User(4, "Stephane", "Ortega");
+    user = new User(4, "Stephane", "Ortega", "child");
     userRepository.save(user);
-    user = new User(5, "Carole", "AAALeary");
+    user = new User(5, "Carole", "AAALeary", "guest");
     userRepository.save(user);
   }
 
