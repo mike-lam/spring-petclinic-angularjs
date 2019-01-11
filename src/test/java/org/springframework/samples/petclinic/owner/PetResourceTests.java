@@ -35,23 +35,32 @@ public class PetResourceTests extends AbstractRestControllerTest {
     properties.setProperty("Accept", MediaType.APPLICATION_JSON.toString());
   }
 
-  // // @PostMapping("/pets") FIXME
+  // // @PostMapping("/pets")
   @Test
   public void pets_shouldGetStatusCreated() throws Exception {
     String path = getPath("/pets");
     Date d = new Date();
     Pet pet = new Pet(14, "XXXX", d, new PetType(1, "cat"),
         new Owner(1, "George", "Franklin", "110 W. Liberty St.", "Madison", "6085551023"));
+    Owner tmp = new Owner();
+    tmp.setId(1);
+    pet.setOwner(tmp);
     String content = toJsonString(pet);
     JsonNode response = this.post(path, HttpStatus.CREATED, content, properties);
     listCountadjust++;
-    System.out.println(response);
     assertEquals("XXXX", response.get("name").asText());
     // not same date format assertEquals(d.toString(), response.get("birthDate").asText());
     assertEquals("http://localhost:8080/pets/14/type", response.get("_links").get("type").get("href").asText());
     assertEquals("http://localhost:8080/pets/14/owner", response.get("_links").get("owner").get("href").asText());
     assertEquals("http://localhost:8080/pets/14", response.get("_links").get("self").get("href").asText());
     assertEquals("http://localhost:8080/pets/14", response.get("_links").get("pet").get("href").asText());
+    // response = this.get(path + "/14", HttpStatus.OK, properties);
+    // System.out.println(response);
+    // response = this.get(getPath("/owners") + "/1", HttpStatus.OK, properties);
+    // System.out.println(response);
+    // response = this.get(getPath("/pets/14/owner"), HttpStatus.OK, properties);
+    // System.out.println(response);
+    //
   }
 
   // @GetMapping("/pets/{petId}")

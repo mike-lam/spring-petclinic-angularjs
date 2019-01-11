@@ -111,7 +111,6 @@ public abstract class AbstractRestControllerTest {
     return PATH + suffix;
   }
 
-  // FIXME change this to toJsonString
   protected String toJsonString(Object obj) throws Exception {
     return objectMapper.writeValueAsString(obj);
   }

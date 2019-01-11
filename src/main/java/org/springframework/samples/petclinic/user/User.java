@@ -9,12 +9,12 @@ import org.springframework.samples.petclinic.model.Person;
 public class User extends Person {
 
   @NotEmpty
-  protected String Role;
+  protected String role;
 
   public User() {
   }
 
-  public User(int i, String firstName, String lastName, String role) {
+  public User(Integer i, String firstName, String lastName, String role) {
     this.setId(i);
     this.setFirstName(firstName);
     this.setLastName(lastName);
@@ -22,11 +22,22 @@ public class User extends Person {
   }
 
   public String getRole() {
-    return Role;
+    return role;
   }
 
   public void setRole(String role) {
-    Role = role;
+    this.role = role;
+  }
+
+  @Override
+  public String toString() {
+    return "User(" + id + "," + firstName + "," + lastName + "," + role + ")";
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    User u = (User) obj;
+    return super.equals(obj) && this.getRole().equals(u.getRole());
   }
 
 }

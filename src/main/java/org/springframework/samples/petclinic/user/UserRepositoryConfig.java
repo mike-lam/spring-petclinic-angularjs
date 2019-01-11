@@ -1,5 +1,8 @@
 package org.springframework.samples.petclinic.user;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,17 +23,13 @@ public class UserRepositoryConfig {
   }
 
   private void preloadUsers() {
-    User user;
-    user = new User(1, "Michel", "Carter", "papa");
-    userRepository.save(user);
-    user = new User(2, "Carole", "Leary", "maman");
-    userRepository.save(user);
-    user = new User(3, "Daphnee", "Dougla", "child");
-    userRepository.save(user);
-    user = new User(4, "Stephane", "Ortega", "child");
-    userRepository.save(user);
-    user = new User(5, "Carole", "AAALeary", "guest");
-    userRepository.save(user);
+    List<User> lst = new ArrayList<User>();
+    lst.add(new User(null, "Michel", "Carter", "papa"));
+    lst.add(new User(null, "Carole", "Leary", "maman"));
+    lst.add(new User(null, "Daphnee", "Dougla", "child"));
+    lst.add(new User(null, "Stephane", "Ortega", "child"));
+    lst.add(new User(null, "Carole", "AAALeary", "guest"));
+    userRepository.saveAll(lst);
   }
 
   @Autowired

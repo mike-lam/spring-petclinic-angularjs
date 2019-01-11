@@ -6,7 +6,7 @@ angular.module('petForm')
         var ownerId = $stateParams.ownerId || 0;
 
         $http.get('petTypes').then(function (resp) {
-            self.types = resp.data;
+            self.types = resp.data._embedded.petTypes;
         }).then(function () {
 
             var petId = $stateParams.petId || 0;
@@ -29,20 +29,34 @@ angular.module('petForm')
         });
 
         self.submit = function () {
-            var id = self.pet.id || 0;
-
+        	var id = self.pet.id || 0;
+        	var owner;
+        	var petType;
+        	
+        	$http.get('owners/' + ownerId).then(function (resp) {
+                owner = resp.data
+                }
+            );
+        	$http.get('petTypes/' + self.petTypeId).then(function (resp) {
+                petType = resp.data
+                }
+            );
+//            
             var data = {
                 id: id,
                 name: self.pet.name,
                 birthDate: self.pet.birthDate,
-                typeId: self.petTypeId
+                petType: petType,
+                owner: owner
             };
 
             var req;
-            if (id) {
-                req = $http.put("owners/" + ownerId + "/pets/" + id, data);
+            debugger;
+            if (id) {//FIXME
+                //req = $http.put("owners/" + ownerId + "/pets/" + id, data);
+                req = $http.put("pets/" + id, data);
             } else {
-                req = $http.post("owners/" + ownerId + "/pets", data);
+                req = $http.post("pets/" , data);
             }
 
             req.then(function () {

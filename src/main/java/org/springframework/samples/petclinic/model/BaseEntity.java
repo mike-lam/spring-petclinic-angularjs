@@ -30,22 +30,26 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 @MappedSuperclass
 public class BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected Integer id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  protected Integer id;
 
+  public void setId(Integer id) {
+    this.id = id;
+  }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+  public Integer getId() {
+    return id;
+  }
 
-    public Integer getId() {
-        return id;
-    }
+  @JsonIgnore
+  public boolean isNew() {
+    return (this.id == null);
+  }
 
-    @JsonIgnore
-    public boolean isNew() {
-        return (this.id == null);
-    }
+  @Override
+  public boolean equals(Object obj) {
+    return this.getId().equals(((BaseEntity) obj).getId());
+  }
 
 }
